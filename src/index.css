@@ -1,0 +1,1237 @@
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f4f6f8;
+  color: #182230;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* =========================================================
+   CITIZEN PORTAL
+========================================================= */
+
+.container {
+  width: min(760px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 55px 0 45px;
+}
+
+/* Main JAN NITI heading */
+
+.container > h1 {
+  margin: 0;
+  text-align: center;
+  color: #174ea6;
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Subtitle */
+
+.container > p {
+  margin: 10px 0 32px;
+  text-align: center;
+  color: #667085;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.container form {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+  padding: 30px;
+}
+
+/* Labels */
+
+.container form label {
+  display: block;
+  margin: 0 0 9px;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Textarea */
+
+.container form textarea {
+  display: block;
+  width: 100%;
+  min-height: 145px;
+  padding: 13px 14px;
+
+  border: 1px solid #cfd5dc;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #182230;
+
+  font-size: 14px;
+  line-height: 1.55;
+
+  resize: vertical;
+  outline: none;
+}
+
+.container form textarea::placeholder {
+  color: #98a2b3;
+}
+
+.container form textarea:focus {
+  border-color: #174ea6;
+  box-shadow: 0 0 0 2px rgba(23, 78, 166, 0.08);
+}
+
+/* =========================================================
+   VOICE BUTTON
+========================================================= */
+
+.container form button[type="button"] {
+  width: auto;
+
+  margin-top: 12px !important;
+  margin-bottom: 24px !important;
+
+  padding: 10px 16px;
+
+  border: 1px solid #174ea6;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #174ea6;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.container form button[type="button"]:hover {
+  background: #f2f6fc;
+}
+
+/* Listening text */
+
+.container form button[type="button"] + p {
+  margin: -13px 0 20px;
+  text-align: left;
+
+  color: #667085;
+  font-size: 12px;
+}
+
+/* =========================================================
+   SELECT
+========================================================= */
+
+.container form select {
+  display: block;
+  width: 100%;
+
+  padding: 12px 13px;
+
+  border: 1px solid #cfd5dc;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #182230;
+
+  font-size: 14px;
+
+  outline: none;
+  cursor: pointer;
+}
+
+.container form select:focus {
+  border-color: #174ea6;
+  box-shadow: 0 0 0 2px rgba(23, 78, 166, 0.08);
+}
+
+/* =========================================================
+   SUBMIT BUTTON
+========================================================= */
+
+.container form button[type="submit"] {
+  display: block;
+  width: 100%;
+
+  margin-top: 24px;
+
+  padding: 13px 16px;
+
+  border: none;
+  border-radius: 5px;
+
+  background: #174ea6;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition: background 0.15s ease;
+}
+
+.container form button[type="submit"]:hover {
+  background: #123d82;
+}
+
+/* =========================================================
+   POLICYMAKER ACCESS AREA
+========================================================= */
+
+/*
+   App.jsx currently uses an inline style for this section.
+   These selectors style that existing structure without
+   changing App.jsx.
+*/
+
+.container > div[style*="borderTop"] {
+  margin-top: 35px !important;
+  padding-top: 20px !important;
+
+  border-top: 1px solid #dfe3e8 !important;
+
+  text-align: center;
+}
+
+.container > div[style*="borderTop"] button {
+  width: auto;
+
+  margin: 0 !important;
+
+  padding: 9px 16px;
+
+  border: 1px solid #98a2b3;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #344054;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.container > div[style*="borderTop"] button:hover {
+  background: #f8fafc;
+}
+
+/* =========================================================
+   POLICYMAKER LOGIN
+========================================================= */
+
+.container form input {
+  display: block;
+  width: 100%;
+
+  padding: 12px 13px;
+
+  border: 1px solid #cfd5dc;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #182230;
+
+  font-size: 14px;
+
+  outline: none;
+}
+
+.container form input::placeholder {
+  color: #98a2b3;
+}
+
+.container form input:focus {
+  border-color: #174ea6;
+  box-shadow: 0 0 0 2px rgba(23, 78, 166, 0.08);
+}
+
+/* Login password spacing */
+
+.container form input[type="email"] {
+  margin-bottom: 20px;
+}
+
+/* Login error */
+
+.container form p[style*="color"] {
+  margin: 12px 0;
+
+  text-align: left;
+
+  color: #b42318 !important;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* =========================================================
+   BACK TO CITIZEN PORTAL BUTTON
+========================================================= */
+
+/*
+   The second button inside login form.
+*/
+
+.container form button[type="submit"] + button {
+  width: 100%;
+
+  margin-top: 10px !important;
+
+  padding: 11px 16px;
+
+  border: 1px solid #cfd5dc;
+  border-radius: 5px;
+
+  background: #ffffff;
+  color: #344054;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.container form button[type="submit"] + button:hover {
+  background: #f8fafc;
+}
+
+/* =========================================================
+   SUCCESS / FEEDBACK SUBMITTED
+========================================================= */
+
+.success {
+  width: 100%;
+
+  background: #ffffff;
+
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+
+  padding: 38px 30px;
+
+  text-align: center;
+}
+
+.success h2 {
+  margin: 0 0 10px;
+
+  color: #182230;
+
+  font-size: 23px;
+  font-weight: 650;
+}
+
+.success p {
+  margin: 0 0 25px;
+
+  color: #667085;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.success button {
+  width: auto;
+
+  margin: 0;
+
+  padding: 11px 20px;
+
+  border: none;
+  border-radius: 5px;
+
+  background: #174ea6;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.success button:hover {
+  background: #123d82;
+}
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+.dashboard-page {
+  min-height: 100vh;
+  background: #f4f6f8;
+}
+
+/* Dashboard top bar */
+
+.dashboard-header {
+  min-height: 76px;
+
+  padding: 0 42px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #dfe3e8;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  font-size: 25px;
+  font-weight: 700;
+
+  letter-spacing: 0.5px;
+
+  color: #174ea6;
+}
+
+.dashboard-header p {
+  margin: 4px 0 0;
+
+  color: #667085;
+
+  font-size: 13px;
+}
+
+.header-status {
+  padding: 8px 13px;
+
+  border: 1px solid #d9dee5;
+  border-radius: 5px;
+
+  background: #f8fafc;
+
+  color: #475467;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   DASHBOARD CONTENT
+========================================================= */
+
+.dashboard-content {
+  width: min(1180px, calc(100% - 48px));
+
+  margin: 0 auto;
+
+  padding: 34px 0 60px;
+}
+
+.dashboard-content section {
+  margin-bottom: 34px;
+}
+
+/* Section headings */
+
+.section-heading {
+  margin-bottom: 15px;
+}
+
+.section-heading h2 {
+  margin: 0;
+
+  color: #182230;
+
+  font-size: 21px;
+  font-weight: 650;
+}
+
+.section-heading p {
+  margin: 5px 0 0;
+
+  color: #667085;
+
+  font-size: 13px;
+}
+
+/* =========================================================
+   OVERVIEW
+========================================================= */
+
+.overview-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 16px;
+}
+
+.stat-card {
+  padding: 21px 23px;
+
+  background: #ffffff;
+
+  border: 1px solid #e1e5ea;
+  border-radius: 7px;
+}
+
+.stat-card span {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #667085;
+
+  font-size: 13px;
+}
+
+.stat-card strong {
+  display: block;
+
+  color: #182230;
+
+  font-size: 31px;
+  line-height: 1;
+}
+
+.stat-card small {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #98a2b3;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   TOP DEVELOPMENT PRIORITY
+========================================================= */
+
+.top-priority {
+  padding: 25px;
+
+  background: #ffffff;
+
+  border: 1px solid #d7dde5;
+  border-radius: 8px;
+}
+
+.priority-main {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 15px;
+}
+
+.rank-badge {
+  min-width: 38px;
+  height: 38px;
+
+  border-radius: 5px;
+
+  background: #174ea6;
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.priority-main h3 {
+  margin: 0;
+
+  color: #182230;
+
+  font-size: 22px;
+}
+
+.category-name {
+  margin: 5px 0 0;
+
+  color: #344054;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.issue-text {
+  margin: 7px 0 0;
+
+  color: #667085;
+
+  font-size: 13px;
+}
+
+/* Score */
+
+.score-box {
+  margin-top: 24px;
+
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 10px;
+}
+
+.score-box span {
+  color: #667085;
+
+  font-size: 13px;
+}
+
+.score-box strong {
+  color: #174ea6;
+
+  font-size: 27px;
+}
+
+.score-box small {
+  color: #667085;
+
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.score-bar {
+  width: 100%;
+  height: 8px;
+
+  margin: 9px 0 23px;
+
+  background: #e9edf2;
+
+  border-radius: 3px;
+
+  overflow: hidden;
+}
+
+.score-bar div {
+  height: 100%;
+
+  background: #174ea6;
+}
+
+/* Factors */
+
+.factor-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, 1fr);
+
+  border-top: 1px solid #eaecf0;
+  border-bottom: 1px solid #eaecf0;
+}
+
+.factor-grid div {
+  padding: 16px 14px;
+
+  border-right: 1px solid #eaecf0;
+}
+
+.factor-grid div:first-child {
+  padding-left: 0;
+}
+
+.factor-grid div:last-child {
+  border-right: none;
+}
+
+.factor-grid span,
+.recommendation span,
+.amrut-info span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #667085;
+
+  font-size: 12px;
+}
+
+.factor-grid strong {
+  color: #182230;
+
+  font-size: 14px;
+}
+
+/* Recommendation */
+
+.recommendation {
+  margin-top: 20px;
+
+  padding: 14px 16px;
+
+  background: #f8fafc;
+
+  border-left: 3px solid #174ea6;
+}
+
+.recommendation strong {
+  color: #182230;
+
+  font-size: 14px;
+}
+
+/* AMRUT */
+
+.amrut-info {
+  margin-top: 15px;
+}
+
+.amrut-info strong {
+  color: #344054;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   DEVELOPMENT PRIORITIES
+========================================================= */
+
+.priority-list {
+  background: #ffffff;
+
+  border: 1px solid #e1e5ea;
+  border-radius: 7px;
+
+  overflow: hidden;
+}
+
+.priority-row {
+  min-height: 105px;
+
+  padding: 17px 20px;
+
+  display: grid;
+
+  grid-template-columns:
+    48px
+    minmax(250px, 1fr)
+    90px
+    75px
+    180px;
+
+  align-items: center;
+
+  gap: 18px;
+
+  border-bottom: 1px solid #eaecf0;
+}
+
+.priority-row:last-child {
+  border-bottom: none;
+}
+
+.priority-number {
+  color: #667085;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.priority-info h3 {
+  margin: 0;
+
+  color: #182230;
+
+  font-size: 15px;
+}
+
+.priority-info p {
+  margin: 4px 0;
+
+  color: #344054;
+
+  font-size: 13px;
+}
+
+.priority-info small {
+  color: #98a2b3;
+
+  font-size: 12px;
+}
+
+.priority-demand,
+.priority-score-small {
+  text-align: center;
+}
+
+.priority-demand span,
+.priority-score-small span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #98a2b3;
+
+  font-size: 11px;
+}
+
+.priority-demand strong {
+  color: #344054;
+
+  font-size: 15px;
+}
+
+.priority-score-small strong {
+  color: #174ea6;
+
+  font-size: 20px;
+}
+
+.mini-score-bar {
+  height: 7px;
+
+  background: #e9edf2;
+
+  border-radius: 3px;
+
+  overflow: hidden;
+}
+
+.mini-score-bar div {
+  height: 100%;
+
+  background: #174ea6;
+}
+
+/* =========================================================
+   ANALYSIS
+========================================================= */
+
+.analysis-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 20px;
+}
+
+.panel-section {
+  min-width: 0;
+}
+
+.analysis-card {
+  padding: 20px;
+
+  background: #ffffff;
+
+  border: 1px solid #e1e5ea;
+  border-radius: 7px;
+}
+
+.bar-item {
+  margin-bottom: 18px;
+}
+
+.bar-item:last-child {
+  margin-bottom: 0;
+}
+
+.bar-label {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 7px;
+
+  font-size: 13px;
+}
+
+.bar-label span {
+  color: #344054;
+}
+
+.bar-label strong {
+  color: #182230;
+}
+
+.horizontal-bar {
+  width: 100%;
+  height: 8px;
+
+  background: #edf0f3;
+
+  border-radius: 3px;
+
+  overflow: hidden;
+}
+
+.horizontal-bar div {
+  height: 100%;
+
+  background: #4b74b8;
+}
+
+/* =========================================================
+   CITIZEN FEEDBACK
+========================================================= */
+
+.feedback-list {
+  display: grid;
+
+  gap: 12px;
+}
+
+.feedback-item {
+  padding: 19px 21px;
+
+  background: #ffffff;
+
+  border: 1px solid #e1e5ea;
+  border-radius: 7px;
+}
+
+.feedback-header {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+.feedback-header h3 {
+  margin: 0;
+
+  color: #182230;
+
+  font-size: 15px;
+}
+
+.feedback-header span {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #667085;
+
+  font-size: 12px;
+}
+
+.feedback-category {
+  padding: 6px 9px;
+
+  border: 1px solid #e4e7ec;
+  border-radius: 4px;
+
+  background: #f2f4f7;
+
+  color: #344054;
+
+  font-size: 12px;
+
+  white-space: nowrap;
+}
+
+.problem {
+  margin: 15px 0;
+
+  padding: 12px 14px;
+
+  background: #f8fafc;
+
+  border-left: 2px solid #d0d5dd;
+
+  color: #344054;
+
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.feedback-details {
+  display: flex;
+
+  gap: 35px;
+
+  padding-top: 13px;
+
+  border-top: 1px solid #eaecf0;
+}
+
+.feedback-details span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #98a2b3;
+
+  font-size: 11px;
+}
+
+.feedback-details strong {
+  display: block;
+
+  color: #475467;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   EMPTY / LOADING
+========================================================= */
+
+.empty-card,
+.loading-box {
+  padding: 30px;
+
+  background: #ffffff;
+
+  border: 1px solid #e1e5ea;
+  border-radius: 7px;
+
+  text-align: center;
+
+  color: #667085;
+}
+
+.loading-box {
+  width: min(500px, calc(100% - 40px));
+
+  margin: 100px auto;
+}
+
+.loading-box h2 {
+  margin: 0 0 8px;
+
+  color: #174ea6;
+}
+
+.loading-box p {
+  margin: 0;
+}
+
+/* =========================================================
+   DASHBOARD LOGOUT / BACK BUTTON AREA
+========================================================= */
+
+/*
+   App.jsx puts Logout and Back to Citizen Portal
+   inside .container after Dashboard.
+*/
+
+.dashboard-page + .container {
+  width: min(1180px, calc(100% - 48px));
+
+  padding: 0 0 35px;
+}
+
+.dashboard-page + .container button {
+  width: auto;
+
+  margin-top: 0;
+
+  padding: 10px 17px;
+
+  border-radius: 5px;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dashboard-page + .container button:first-child {
+  background: #174ea6;
+  color: #ffffff;
+}
+
+.dashboard-page + .container button:first-child:hover {
+  background: #123d82;
+}
+
+.dashboard-page + .container button:last-child {
+  background: #ffffff;
+  color: #344054;
+
+  border: 1px solid #cfd5dc;
+}
+
+.dashboard-page + .container button:last-child:hover {
+  background: #f8fafc;
+}
+
+/* =========================================================
+   RESPONSIVE — TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .factor-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .factor-grid div:nth-child(2) {
+    border-right: none;
+  }
+
+  .priority-row {
+    grid-template-columns:
+      40px
+      1fr
+      70px;
+  }
+
+  .mini-score-bar {
+    grid-column: 2 / 4;
+  }
+
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  /* Citizen */
+
+  .container {
+    width: calc(100% - 28px);
+
+    padding-top: 35px;
+  }
+
+  .container > h1 {
+    font-size: 32px;
+  }
+
+  .container > p {
+    font-size: 14px;
+  }
+
+  .container form {
+    padding: 22px;
+  }
+
+  /* Dashboard header */
+
+  .dashboard-header {
+    min-height: auto;
+
+    padding: 15px 20px;
+
+    align-items: flex-start;
+
+    gap: 15px;
+  }
+
+  .header-status {
+    display: none;
+  }
+
+  /* Dashboard */
+
+  .dashboard-content {
+    width: calc(100% - 28px);
+
+    padding-top: 25px;
+  }
+
+  /* Top priority factors */
+
+  .factor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .factor-grid div {
+    padding-left: 0;
+
+    border-right: none;
+    border-bottom: 1px solid #eaecf0;
+  }
+
+  .factor-grid div:last-child {
+    border-bottom: none;
+  }
+
+  /* Priority list */
+
+  .priority-row {
+    grid-template-columns:
+      35px
+      1fr
+      60px;
+
+    gap: 10px;
+  }
+
+  .priority-demand {
+    display: none;
+  }
+
+  .mini-score-bar {
+    grid-column: 2 / 4;
+  }
+
+  /* Feedback */
+
+  .feedback-header {
+    flex-direction: column;
+
+    gap: 10px;
+  }
+
+  .feedback-category {
+    white-space: normal;
+  }
+
+  .feedback-details {
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+  /* Dashboard bottom buttons */
+
+  .dashboard-page + .container {
+    width: calc(100% - 28px);
+
+    padding-bottom: 25px;
+  }
+
+  .dashboard-page + .container button {
+    width: 100%;
+
+    margin: 5px 0 !important;
+  }
+
+}
