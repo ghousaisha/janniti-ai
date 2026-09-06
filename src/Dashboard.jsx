@@ -49,7 +49,11 @@ function getPriorityStatus(complaints) {
     (item) => item.status || "Pending"
   );
 
-  if (statuses.some((status) => status === "Processing")) {
+  if (
+    statuses.some(
+      (status) => status === "Processing"
+    )
+  ) {
     return "Processing";
   }
 
@@ -326,6 +330,21 @@ function Dashboard() {
 
 
   // ======================================================
+  // CATEGORY COUNTS
+  // ======================================================
+
+  const categoryCounts = {};
+
+  feedback.forEach((item) => {
+    const category =
+      item.category || "Other Civic Service";
+
+    categoryCounts[category] =
+      (categoryCounts[category] || 0) + 1;
+  });
+
+
+  // ======================================================
   // ONLY ACTIVE FEEDBACK
   // ======================================================
 
@@ -558,6 +577,17 @@ function Dashboard() {
 
 
   // ======================================================
+  // MAX CATEGORY COUNT
+  // ======================================================
+
+  const maxCategoryCount =
+    Math.max(
+      ...Object.values(categoryCounts),
+      1
+    );
+
+
+  // ======================================================
   // STATUS COUNTS
   // ======================================================
 
@@ -582,6 +612,20 @@ function Dashboard() {
 
 
   // ======================================================
+  // RESOLUTION RATE
+  // ======================================================
+
+  const resolutionRate =
+    feedback.length > 0
+      ? Math.round(
+          (resolvedCount /
+            feedback.length) *
+            100
+        )
+      : 0;
+
+
+  // ======================================================
   // RESOLVED HISTORY
   // ======================================================
 
@@ -590,6 +634,14 @@ function Dashboard() {
       (item) =>
         item.status === "Resolved"
     );
+
+
+  // ======================================================
+  // TOP PRIORITY GRAPH DATA
+  // ======================================================
+
+  const priorityGraphData =
+    priorities.slice(0, 6);
 
 
   // ======================================================
@@ -622,6 +674,983 @@ function Dashboard() {
 
 
       <main className="dashboard-content">
+
+
+        {/* =================================================
+            NEW EXECUTIVE DASHBOARD
+        ================================================= */}
+
+        <section
+          id="executive-dashboard"
+          style={{
+            marginBottom: "42px",
+          }}
+        >
+
+          <div className="section-heading">
+            <div>
+              <h2>
+                Executive Dashboard
+              </h2>
+
+              <p>
+                Real-time summary of citizen demand,
+                development priorities and complaint status
+              </p>
+            </div>
+
+            <span
+              className="priority-count"
+            >
+              Live Data
+            </span>
+          </div>
+
+
+          {/* =================================================
+              SUMMARY CARDS
+          ================================================= */}
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(190px, 1fr))",
+              gap: "14px",
+              marginBottom: "20px",
+            }}
+          >
+
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("citizen-feedback")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+              style={{
+                textAlign: "left",
+                border: "1px solid #d8e0ea",
+                borderRadius: "12px",
+                padding: "20px",
+                background: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  color: "#6480a0",
+                  marginBottom: "8px",
+                }}
+              >
+                Total Feedback
+              </span>
+
+              <strong
+                style={{
+                  display: "block",
+                  fontSize: "30px",
+                  color: "#123b66",
+                }}
+              >
+                {feedback.length}
+              </strong>
+
+              <small
+                style={{
+                  color: "#6f86a0",
+                }}
+              >
+                Citizen submissions
+              </small>
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("development-priorities")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+              style={{
+                textAlign: "left",
+                border: "1px solid #d8e0ea",
+                borderRadius: "12px",
+                padding: "20px",
+                background: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  color: "#6480a0",
+                  marginBottom: "8px",
+                }}
+              >
+                Active Priorities
+              </span>
+
+              <strong
+                style={{
+                  display: "block",
+                  fontSize: "30px",
+                  color: "#1769c2",
+                }}
+              >
+                {priorities.length}
+              </strong>
+
+              <small
+                style={{
+                  color: "#6f86a0",
+                }}
+              >
+                Areas requiring attention
+              </small>
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("status-summary")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+              style={{
+                textAlign: "left",
+                border: "1px solid #d8e0ea",
+                borderRadius: "12px",
+                padding: "20px",
+                background: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  color: "#6480a0",
+                  marginBottom: "8px",
+                }}
+              >
+                Pending
+              </span>
+
+              <strong
+                style={{
+                  display: "block",
+                  fontSize: "30px",
+                  color: "#b77900",
+                }}
+              >
+                {pendingCount}
+              </strong>
+
+              <small
+                style={{
+                  color: "#6f86a0",
+                }}
+              >
+                Awaiting action
+              </small>
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("resolved-history")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+              style={{
+                textAlign: "left",
+                border: "1px solid #d8e0ea",
+                borderRadius: "12px",
+                padding: "20px",
+                background: "#fff",
+                cursor: "pointer",
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  color: "#6480a0",
+                  marginBottom: "8px",
+                }}
+              >
+                Resolved
+              </span>
+
+              <strong
+                style={{
+                  display: "block",
+                  fontSize: "30px",
+                  color: "#16855b",
+                }}
+              >
+                {resolvedCount}
+              </strong>
+
+              <small
+                style={{
+                  color: "#6f86a0",
+                }}
+              >
+                Completed complaints
+              </small>
+            </button>
+
+
+            <div
+              style={{
+                border: "1px solid #d8e0ea",
+                borderRadius: "12px",
+                padding: "20px",
+                background: "#fff",
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  color: "#6480a0",
+                  marginBottom: "8px",
+                }}
+              >
+                Areas Covered
+              </span>
+
+              <strong
+                style={{
+                  display: "block",
+                  fontSize: "30px",
+                  color: "#123b66",
+                }}
+              >
+                {
+                  Object.keys(
+                    areaCounts
+                  ).length
+                }
+              </strong>
+
+              <small
+                style={{
+                  color: "#6f86a0",
+                }}
+              >
+                Locations represented
+              </small>
+            </div>
+
+
+            <div
+              style={{
+                border: "1px solid #d8e0ea",
+                borderRadius: "12px",
+                padding: "20px",
+                background: "#fff",
+              }}
+            >
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "13px",
+                  color: "#6480a0",
+                  marginBottom: "8px",
+                }}
+              >
+                Resolution Rate
+              </span>
+
+              <strong
+                style={{
+                  display: "block",
+                  fontSize: "30px",
+                  color: "#16855b",
+                }}
+              >
+                {resolutionRate}%
+              </strong>
+
+              <small
+                style={{
+                  color: "#6f86a0",
+                }}
+              >
+                Of all feedback
+              </small>
+            </div>
+
+          </div>
+
+
+          {/* =================================================
+              QUICK ACTION BUTTONS
+          ================================================= */}
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "10px",
+              marginBottom: "22px",
+            }}
+          >
+
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("development-priorities")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+              style={{
+                padding: "10px 16px",
+                borderRadius: "8px",
+                border: "1px solid #1769c2",
+                background: "#1769c2",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: "600",
+              }}
+            >
+              View Development Priorities
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("analysis")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+              style={{
+                padding: "10px 16px",
+                borderRadius: "8px",
+                border: "1px solid #d5dfeb",
+                background: "#fff",
+                color: "#123b66",
+                cursor: "pointer",
+                fontWeight: "600",
+              }}
+            >
+              View Analytics
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("citizen-feedback")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+              style={{
+                padding: "10px 16px",
+                borderRadius: "8px",
+                border: "1px solid #d5dfeb",
+                background: "#fff",
+                color: "#123b66",
+                cursor: "pointer",
+                fontWeight: "600",
+              }}
+            >
+              View Citizen Feedback
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() =>
+                document
+                  .getElementById("resolved-history")
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
+              }
+              style={{
+                padding: "10px 16px",
+                borderRadius: "8px",
+                border: "1px solid #d5dfeb",
+                background: "#fff",
+                color: "#123b66",
+                cursor: "pointer",
+                fontWeight: "600",
+              }}
+            >
+              View Resolved History
+            </button>
+
+          </div>
+
+
+          {/* =================================================
+              GRAPHS GRID
+          ================================================= */}
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(340px, 1fr))",
+              gap: "18px",
+            }}
+          >
+
+
+            {/* ===============================================
+                STATUS GRAPH
+            =============================================== */}
+
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #d8e0ea",
+                borderRadius: "12px",
+                padding: "22px",
+              }}
+            >
+
+              <h3
+                style={{
+                  margin: "0 0 5px",
+                  color: "#123b66",
+                }}
+              >
+                Complaint Status
+              </h3>
+
+              <p
+                style={{
+                  margin: "0 0 22px",
+                  color: "#6f86a0",
+                  fontSize: "13px",
+                }}
+              >
+                Current status of all citizen submissions
+              </p>
+
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "25px",
+                  flexWrap: "wrap",
+                }}
+              >
+
+                <div
+                  style={{
+                    width: "150px",
+                    height: "150px",
+                    borderRadius: "50%",
+                    background:
+                      `conic-gradient(
+                        #16855b 0 ${resolvedCount > 0 ? (resolvedCount / Math.max(feedback.length, 1)) * 100 : 0}%,
+                        #e3a72f ${resolvedCount > 0 ? (resolvedCount / Math.max(feedback.length, 1)) * 100 : 0}% ${((resolvedCount + pendingCount) / Math.max(feedback.length, 1)) * 100}%,
+                        #1769c2 ${((resolvedCount + pendingCount) / Math.max(feedback.length, 1)) * 100}% 100%
+                      )`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+
+                  <div
+                    style={{
+                      width: "92px",
+                      height: "92px",
+                      borderRadius: "50%",
+                      background: "#fff",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+
+                    <strong
+                      style={{
+                        fontSize: "25px",
+                        color: "#123b66",
+                      }}
+                    >
+                      {feedback.length}
+                    </strong>
+
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        color: "#6f86a0",
+                      }}
+                    >
+                      Total
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "14px",
+                  }}
+                >
+
+                  <div>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "50%",
+                        background: "#e3a72f",
+                        marginRight: "8px",
+                      }}
+                    />
+
+                    <strong>
+                      Pending
+                    </strong>
+
+                    <span
+                      style={{
+                        marginLeft: "8px",
+                        color: "#6f86a0",
+                      }}
+                    >
+                      {pendingCount}
+                    </span>
+                  </div>
+
+
+                  <div>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "50%",
+                        background: "#1769c2",
+                        marginRight: "8px",
+                      }}
+                    />
+
+                    <strong>
+                      Processing
+                    </strong>
+
+                    <span
+                      style={{
+                        marginLeft: "8px",
+                        color: "#6f86a0",
+                      }}
+                    >
+                      {processingCount}
+                    </span>
+                  </div>
+
+
+                  <div>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: "10px",
+                        height: "10px",
+                        borderRadius: "50%",
+                        background: "#16855b",
+                        marginRight: "8px",
+                      }}
+                    />
+
+                    <strong>
+                      Resolved
+                    </strong>
+
+                    <span
+                      style={{
+                        marginLeft: "8px",
+                        color: "#6f86a0",
+                      }}
+                    >
+                      {resolvedCount}
+                    </span>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            {/* ===============================================
+                AREA DEMAND GRAPH
+            =============================================== */}
+
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #d8e0ea",
+                borderRadius: "12px",
+                padding: "22px",
+              }}
+            >
+
+              <h3
+                style={{
+                  margin: "0 0 5px",
+                  color: "#123b66",
+                }}
+              >
+                Citizen Demand by Area
+              </h3>
+
+              <p
+                style={{
+                  margin: "0 0 18px",
+                  color: "#6f86a0",
+                  fontSize: "13px",
+                }}
+              >
+                Areas receiving the highest number of reports
+              </p>
+
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "13px",
+                }}
+              >
+
+                {Object.entries(areaCounts)
+                  .sort(
+                    (a, b) =>
+                      b[1] - a[1]
+                  )
+                  .map(
+                    ([area, count]) => (
+
+                      <div
+                        key={area}
+                      >
+
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            gap: "10px",
+                            marginBottom: "5px",
+                            fontSize: "13px",
+                          }}
+                        >
+
+                          <span>
+                            {area}
+                          </span>
+
+                          <strong>
+                            {count}
+                          </strong>
+
+                        </div>
+
+
+                        <div
+                          style={{
+                            height: "8px",
+                            borderRadius: "10px",
+                            background: "#e7edf4",
+                            overflow: "hidden",
+                          }}
+                        >
+
+                          <div
+                            style={{
+                              width:
+                                `${(
+                                  count /
+                                  maxAreaCount
+                                ) * 100}%`,
+                              height: "100%",
+                              borderRadius: "10px",
+                              background: "#1769c2",
+                              transition:
+                                "width 0.4s ease",
+                            }}
+                          />
+
+                        </div>
+
+                      </div>
+
+                    )
+                  )}
+
+              </div>
+
+            </div>
+
+
+            {/* ===============================================
+                CATEGORY GRAPH
+            =============================================== */}
+
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #d8e0ea",
+                borderRadius: "12px",
+                padding: "22px",
+              }}
+            >
+
+              <h3
+                style={{
+                  margin: "0 0 5px",
+                  color: "#123b66",
+                }}
+              >
+                Issue Categories
+              </h3>
+
+              <p
+                style={{
+                  margin: "0 0 18px",
+                  color: "#6f86a0",
+                  fontSize: "13px",
+                }}
+              >
+                Distribution of civic service complaints
+              </p>
+
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "13px",
+                }}
+              >
+
+                {Object.entries(categoryCounts)
+                  .sort(
+                    (a, b) =>
+                      b[1] - a[1]
+                  )
+                  .map(
+                    ([category, count]) => (
+
+                      <div
+                        key={category}
+                      >
+
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            gap: "10px",
+                            marginBottom: "5px",
+                            fontSize: "13px",
+                          }}
+                        >
+
+                          <span>
+                            {category}
+                          </span>
+
+                          <strong>
+                            {count}
+                          </strong>
+
+                        </div>
+
+
+                        <div
+                          style={{
+                            height: "8px",
+                            borderRadius: "10px",
+                            background: "#e7edf4",
+                            overflow: "hidden",
+                          }}
+                        >
+
+                          <div
+                            style={{
+                              width:
+                                `${(
+                                  count /
+                                  maxCategoryCount
+                                ) * 100}%`,
+                              height: "100%",
+                              borderRadius: "10px",
+                              background: "#4c78b8",
+                              transition:
+                                "width 0.4s ease",
+                            }}
+                          />
+
+                        </div>
+
+                      </div>
+
+                    )
+                  )}
+
+              </div>
+
+            </div>
+
+
+            {/* ===============================================
+                PRIORITY GRAPH
+            =============================================== */}
+
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #d8e0ea",
+                borderRadius: "12px",
+                padding: "22px",
+              }}
+            >
+
+              <h3
+                style={{
+                  margin: "0 0 5px",
+                  color: "#123b66",
+                }}
+              >
+                Top Development Priorities
+              </h3>
+
+              <p
+                style={{
+                  margin: "0 0 18px",
+                  color: "#6f86a0",
+                  fontSize: "13px",
+                }}
+              >
+                Highest-ranked active development needs
+              </p>
+
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "15px",
+                }}
+              >
+
+                {priorityGraphData.map(
+                  (item, index) => (
+
+                    <div
+                      key={
+                        `${item.area}-${item.category}-${index}`
+                      }
+                    >
+
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          gap: "10px",
+                          marginBottom: "5px",
+                          fontSize: "13px",
+                        }}
+                      >
+
+                        <span>
+                          #{index + 1} {item.area}
+                        </span>
+
+                        <strong>
+                          {item.priorityScore}
+                        </strong>
+
+                      </div>
+
+
+                      <div
+                        style={{
+                          height: "9px",
+                          borderRadius: "10px",
+                          background: "#e7edf4",
+                          overflow: "hidden",
+                        }}
+                      >
+
+                        <div
+                          style={{
+                            width:
+                              `${item.priorityScore}%`,
+                            height: "100%",
+                            borderRadius: "10px",
+                            background: "#1769c2",
+                          }}
+                        />
+
+                      </div>
+
+
+                      <small
+                        style={{
+                          display: "block",
+                          marginTop: "4px",
+                          color: "#71869f",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {item.category}
+                      </small>
+
+                    </div>
+
+                  )
+                )}
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
 
 
         {/* =================================================
@@ -870,7 +1899,9 @@ function Dashboard() {
             DEVELOPMENT PRIORITIES
         ================================================= */}
 
-        <section>
+        <section
+          id="development-priorities"
+        >
 
           <div className="section-heading">
 
@@ -1210,7 +2241,10 @@ function Dashboard() {
             ISSUE + AREA ANALYSIS
         ================================================= */}
 
-        <div className="analysis-grid">
+        <div
+          className="analysis-grid"
+          id="analysis"
+        >
 
           <section className="panel-section">
 
@@ -1362,7 +2396,9 @@ function Dashboard() {
             CITIZEN FEEDBACK
         ================================================= */}
 
-        <section>
+        <section
+          id="citizen-feedback"
+        >
 
           <div className="section-heading">
 
@@ -1476,7 +2512,10 @@ function Dashboard() {
             RESOLVED HISTORY
         ================================================= */}
 
-        <section className="resolved-history">
+        <section
+          className="resolved-history"
+          id="resolved-history"
+        >
 
           <div className="section-heading">
 
@@ -1568,7 +2607,10 @@ function Dashboard() {
             STATUS SUMMARY
         ================================================= */}
 
-        <section className="status-summary">
+        <section
+          className="status-summary"
+          id="status-summary"
+        >
 
           <div className="summary-card">
 

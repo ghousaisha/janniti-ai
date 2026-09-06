@@ -4,6 +4,11 @@ import {
   collection,
   addDoc,
   serverTimestamp,
+  query,
+  where,
+  onSnapshot,
+  updateDoc,
+  doc,
 } from "firebase/firestore";
 
 import {
@@ -95,6 +100,23 @@ function App() {
 
 
   // ====================================================
+  // CITIZEN NOTIFICATIONS
+  // ====================================================
+
+  const [notifications, setNotifications] =
+    useState([]);
+
+  const [showNotifications, setShowNotifications] =
+    useState(false);
+
+  const unreadNotifications =
+    notifications.filter(
+      (notification) =>
+        notification.read !== true
+    ).length;
+
+
+  // ====================================================
   // CHECK POLICYMAKER AUTHENTICATION
   // ====================================================
 
@@ -111,6 +133,250 @@ function App() {
     return () => unsubscribe();
 
   }, []);
+
+
+  // ====================================================
+  // LOAD CITIZEN NOTIFICATIONS IN REAL TIME
+  // ====================================================
+
+  useEffect(() => {
+
+    if (
+      page !== "citizen" ||
+      !citizenPhone
+    ) {
+      setNotifications([]);
+      return;
+    }
+
+
+    const phone =
+      `+91${citizenPhone}`;
+
+
+    const notificationsQuery =
+      query(
+        collection(db, "notifications"),
+        where(
+          "citizenPhone",
+          "==",
+          phone
+        )
+      );
+
+
+    const unsubscribe =
+      onSnapshot(
+        notificationsQuery,
+        (snapshot) => {
+
+          const data =
+            snapshot.docs.map(
+              (notificationDoc) => ({
+                id:
+                  notificationDoc.id,
+                ...notificationDoc.data(),
+              })
+            );
+
+
+          // Sort newest notifications first.
+          // We sort locally so Firestore does not
+          // require an additional composite index.
+
+          data.sort(
+            (a, b) => {
+
+              const timeA =
+                a.createdAt?.toMillis
+                  ? a.createdAt.toMillis()
+                  : 0;
+
+              const timeB =
+                b.createdAt?.toMillis
+                  ? b.createdAt.toMillis()
+                  : 0;
+
+              return timeB - timeA;
+            }
+          );
+
+
+          setNotifications(data);
+
+        },
+        (error) => {
+
+          console.error(
+            "Notification listener error:",
+            error
+          );
+
+        }
+      );
+
+
+    return () => unsubscribe();
+
+  }, [
+    page,
+    citizenPhone,
+  ]);
+
+
+  // ====================================================
+  // MARK NOTIFICATION AS READ
+  // ====================================================
+
+  const markNotificationAsRead =
+    async (notificationId) => {
+
+      try {
+
+        await updateDoc(
+          doc(
+            db,
+            "notifications",
+            notificationId
+          ),
+          {
+            read: true,
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Error marking notification as read:",
+          error
+        );
+
+      }
+
+    };
+
+
+  // ====================================================
+  // MARK ALL NOTIFICATIONS AS READ
+  // ====================================================
+
+  const markAllNotificationsAsRead =
+    async () => {
+
+      try {
+
+        const unread =
+          notifications.filter(
+            (notification) =>
+              notification.read !== true
+          );
+
+
+        await Promise.all(
+          unread.map(
+            (notification) =>
+              updateDoc(
+                doc(
+                  db,
+                  "notifications",
+                  notification.id
+                ),
+                {
+                  read: true,
+                }
+              )
+          )
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Error marking notifications as read:",
+          error
+        );
+
+      }
+
+    };
+
+
+  // ====================================================
+  // FORMAT NOTIFICATION TIME
+  // ====================================================
+
+  const formatNotificationTime =
+    (timestamp) => {
+
+      if (
+        !timestamp ||
+        !timestamp.toDate
+      ) {
+        return "Just now";
+      }
+
+
+      const date =
+        timestamp.toDate();
+
+
+      const now =
+        new Date();
+
+
+      const difference =
+        now.getTime() -
+        date.getTime();
+
+
+      const minutes =
+        Math.floor(
+          difference /
+          (1000 * 60)
+        );
+
+
+      if (minutes < 1) {
+        return "Just now";
+      }
+
+
+      if (minutes < 60) {
+        return `${minutes} min ago`;
+      }
+
+
+      const hours =
+        Math.floor(
+          minutes / 60
+        );
+
+
+      if (hours < 24) {
+        return `${hours} hr ago`;
+      }
+
+
+      const days =
+        Math.floor(
+          hours / 24
+        );
+
+
+      if (days === 1) {
+        return "Yesterday";
+      }
+
+
+      return date.toLocaleDateString(
+        "en-IN",
+        {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        }
+      );
+
+    };
 
 
   // ====================================================
@@ -609,6 +875,10 @@ Return ONLY valid JSON in this exact format:
 
 
       setCitizenPhone("");
+
+      setNotifications([]);
+
+      setShowNotifications(false);
 
       setPage("home");
 
@@ -1166,15 +1436,461 @@ Return ONLY valid JSON in this exact format:
         </p>
 
 
-        <p
+        <div
           style={{
-            fontSize: "14px",
-            color: "#666",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "15px",
+            flexWrap: "wrap",
+            marginTop: "5px",
+            marginBottom: "15px",
           }}
         >
-          Logged in with mobile number:{" "}
-          +91 {citizenPhone}
-        </p>
+
+          <p
+            style={{
+              fontSize: "14px",
+              color: "#666",
+              margin: 0,
+            }}
+          >
+            Logged in with mobile number:{" "}
+            +91 {citizenPhone}
+          </p>
+
+
+          {/* =================================================
+              NOTIFICATION BUTTON
+          ================================================= */}
+
+          <div
+            style={{
+              position: "relative",
+            }}
+          >
+
+            <button
+              type="button"
+              onClick={() =>
+                setShowNotifications(
+                  (prev) => !prev
+                )
+              }
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "10px 15px",
+                borderRadius: "8px",
+                border: "1px solid #d8e0ea",
+                background: "#fff",
+                color: "#123b66",
+                cursor: "pointer",
+                fontWeight: "600",
+              }}
+            >
+
+              <span
+                style={{
+                  fontSize: "20px",
+                  lineHeight: 1,
+                }}
+              >
+                🔔
+              </span>
+
+              <span>
+                Notifications
+              </span>
+
+
+              {unreadNotifications > 0 && (
+
+                <span
+                  style={{
+                    minWidth: "21px",
+                    height: "21px",
+                    padding: "0 5px",
+                    borderRadius: "20px",
+                    background: "#d62828",
+                    color: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "11px",
+                    fontWeight: "700",
+                  }}
+                >
+                  {unreadNotifications}
+                </span>
+
+              )}
+
+            </button>
+
+
+            {/* =================================================
+                NOTIFICATION PANEL
+            ================================================= */}
+
+            {showNotifications && (
+
+              <div
+                style={{
+                  position: "absolute",
+                  right: 0,
+                  top: "52px",
+                  width: "380px",
+                  maxWidth:
+                    "calc(100vw - 30px)",
+                  background: "#fff",
+                  border:
+                    "1px solid #d8e0ea",
+                  borderRadius: "12px",
+                  boxShadow:
+                    "0 10px 30px rgba(0,0,0,0.15)",
+                  zIndex: 1000,
+                  overflow: "hidden",
+                }}
+              >
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent:
+                      "space-between",
+                    gap: "10px",
+                    padding: "16px 18px",
+                    borderBottom:
+                      "1px solid #e5eaf0",
+                  }}
+                >
+
+                  <div>
+
+                    <strong
+                      style={{
+                        color: "#123b66",
+                        fontSize: "16px",
+                      }}
+                    >
+                      Notifications
+                    </strong>
+
+                    <div
+                      style={{
+                        fontSize: "12px",
+                        color: "#71869f",
+                        marginTop: "3px",
+                      }}
+                    >
+                      Complaint status updates
+                    </div>
+
+                  </div>
+
+
+                  {unreadNotifications >
+                    0 && (
+
+                    <button
+                      type="button"
+                      onClick={
+                        markAllNotificationsAsRead
+                      }
+                      style={{
+                        border: "none",
+                        background:
+                          "transparent",
+                        color: "#1769c2",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                        padding: "4px",
+                      }}
+                    >
+                      Mark all read
+                    </button>
+
+                  )}
+
+                </div>
+
+
+                <div
+                  style={{
+                    maxHeight: "420px",
+                    overflowY: "auto",
+                  }}
+                >
+
+                  {notifications.length ===
+                  0 ? (
+
+                    <div
+                      style={{
+                        padding: "35px 20px",
+                        textAlign: "center",
+                        color: "#71869f",
+                      }}
+                    >
+
+                      <div
+                        style={{
+                          fontSize: "30px",
+                          marginBottom: "10px",
+                        }}
+                      >
+                        🔔
+                      </div>
+
+                      <strong
+                        style={{
+                          display: "block",
+                          color: "#123b66",
+                          marginBottom: "5px",
+                        }}
+                      >
+                        No notifications
+                      </strong>
+
+                      <span
+                        style={{
+                          fontSize: "13px",
+                        }}
+                      >
+                        Updates about your complaints
+                        will appear here.
+                      </span>
+
+                    </div>
+
+                  ) : (
+
+                    notifications.map(
+                      (notification) => {
+
+                        const isUnread =
+                          notification.read !==
+                          true;
+
+                        const isResolved =
+                          notification.status ===
+                          "Resolved";
+
+                        return (
+
+                          <div
+                            key={
+                              notification.id
+                            }
+                            onClick={() => {
+
+                              if (
+                                isUnread
+                              ) {
+                                markNotificationAsRead(
+                                  notification.id
+                                );
+                              }
+
+                            }}
+                            style={{
+                              padding:
+                                "16px 18px",
+                              borderBottom:
+                                "1px solid #edf1f5",
+                              background:
+                                isUnread
+                                  ? "#f7fbff"
+                                  : "#fff",
+                              cursor:
+                                isUnread
+                                  ? "pointer"
+                                  : "default",
+                            }}
+                          >
+
+                            <div
+                              style={{
+                                display: "flex",
+                                alignItems:
+                                  "flex-start",
+                                gap: "12px",
+                              }}
+                            >
+
+                              <div
+                                style={{
+                                  width: "36px",
+                                  height: "36px",
+                                  borderRadius:
+                                    "50%",
+                                  background:
+                                    isResolved
+                                      ? "#e8f7f0"
+                                      : "#eaf3ff",
+                                  display:
+                                    "flex",
+                                  alignItems:
+                                    "center",
+                                  justifyContent:
+                                    "center",
+                                  flexShrink: 0,
+                                  fontSize: "17px",
+                                }}
+                              >
+                                {isResolved
+                                  ? "✓"
+                                  : "↻"}
+                              </div>
+
+
+                              <div
+                                style={{
+                                  flex: 1,
+                                  minWidth: 0,
+                                }}
+                              >
+
+                                <div
+                                  style={{
+                                    display:
+                                      "flex",
+                                    justifyContent:
+                                      "space-between",
+                                    gap: "8px",
+                                  }}
+                                >
+
+                                  <strong
+                                    style={{
+                                      color:
+                                        isResolved
+                                          ? "#16855b"
+                                          : "#1769c2",
+                                      fontSize:
+                                        "14px",
+                                    }}
+                                  >
+                                    {isResolved
+                                      ? "Complaint Resolved"
+                                      : "Complaint Being Processed"}
+                                  </strong>
+
+
+                                  {isUnread && (
+
+                                    <span
+                                      style={{
+                                        width:
+                                          "8px",
+                                        height:
+                                          "8px",
+                                        borderRadius:
+                                          "50%",
+                                        background:
+                                          "#1769c2",
+                                        flexShrink: 0,
+                                        marginTop:
+                                          "5px",
+                                      }}
+                                    />
+
+                                  )}
+
+                                </div>
+
+
+                                <p
+                                  style={{
+                                    margin:
+                                      "7px 0",
+                                    color:
+                                      "#3f556d",
+                                    fontSize:
+                                      "13px",
+                                    lineHeight:
+                                      "1.5",
+                                  }}
+                                >
+                                  {
+                                    notification.message
+                                  }
+                                </p>
+
+
+                                <div
+                                  style={{
+                                    display:
+                                      "flex",
+                                    gap: "10px",
+                                    flexWrap:
+                                      "wrap",
+                                    fontSize:
+                                      "11px",
+                                    color:
+                                      "#71869f",
+                                  }}
+                                >
+
+                                  {notification.area && (
+
+                                    <span>
+                                      📍{" "}
+                                      {
+                                        notification.area
+                                      }
+                                    </span>
+
+                                  )}
+
+
+                                  {notification.category && (
+
+                                    <span>
+                                      {
+                                        notification.category
+                                      }
+                                    </span>
+
+                                  )}
+
+
+                                  <span>
+                                    {
+                                      formatNotificationTime(
+                                        notification.createdAt
+                                      )
+                                    }
+                                  </span>
+
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                        );
+
+                      }
+                    )
+
+                  )}
+
+                </div>
+
+              </div>
+
+            )}
+
+          </div>
+
+        </div>
 
 
         {/* =================================================
@@ -1203,6 +1919,10 @@ Return ONLY valid JSON in this exact format:
           />
 
 
+          {/* =================================================
+              SPEAK YOUR COMPLAINT
+          ================================================= */}
+
           <button
             type="button"
             onClick={
@@ -1215,12 +1935,84 @@ Return ONLY valid JSON in this exact format:
             style={{
               marginTop: "10px",
               marginBottom: "15px",
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
+              padding: "8px 26px 8px 10px",
+              minHeight: "64px",
+              borderRadius: "12px",
+              border: "none",
+              background: "#1769c2",
+              color: "#fff",
+              fontSize: "18px",
+              fontWeight: "600",
+              cursor:
+                listening || loading
+                  ? "not-allowed"
+                  : "pointer",
+              boxShadow:
+                "0 3px 8px rgba(0, 0, 0, 0.12)",
             }}
           >
 
-            {listening
-              ? "Listening..."
-              : "Speak Your Complaint"}
+            <span
+              style={{
+                width: "48px",
+                height: "48px",
+                borderRadius: "50%",
+                background: "#f4f8fc",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+
+                <path
+                  d="M12 15.5C14.21 15.5 16 13.71 16 11.5V6.5C16 4.29 14.21 2.5 12 2.5C9.79 2.5 8 4.29 8 6.5V11.5C8 13.71 9.79 15.5 12 15.5Z"
+                  fill="#1769c2"
+                />
+
+                <path
+                  d="M19 11.5C19 15.37 15.87 18.5 12 18.5C8.13 18.5 5 15.37 5 11.5"
+                  stroke="#1769c2"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+
+                <path
+                  d="M12 18.5V21.5"
+                  stroke="#1769c2"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+
+                <path
+                  d="M9 21.5H15"
+                  stroke="#1769c2"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+
+              </svg>
+
+            </span>
+
+
+            <span>
+              {listening
+                ? "Listening..."
+                : "Speak Your Complaint"}
+            </span>
 
           </button>
 
