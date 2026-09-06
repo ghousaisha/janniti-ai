@@ -10,7 +10,7 @@ import {
 
 import { db } from "./firebase";
 import publicData from "./publicData";
-import "./app.css";
+import "./App.css";
 
 const projectRecommendations = {
   "Roads & Urban Mobility":
